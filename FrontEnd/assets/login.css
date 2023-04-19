@@ -103,7 +103,6 @@ nav li {
 }
 input[type="email"],[type="password"]{
     border: none;
-    color: white;
     box-shadow: 1px 5px 5px black; 
     opacity: 0.3;
     width: 100%; 
@@ -121,7 +120,7 @@ input[type="submit"]{
 	border-radius: 60px ;
     height: 25px;
     border: none;
-   
+   height: 50px;
 }
 
 
