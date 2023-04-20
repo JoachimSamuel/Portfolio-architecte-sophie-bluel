@@ -1,3 +1,5 @@
+// Afficher les images 
+
 fetch('http://localhost:5678/api/works')
   .then(r => r.json())
   .then(data => {

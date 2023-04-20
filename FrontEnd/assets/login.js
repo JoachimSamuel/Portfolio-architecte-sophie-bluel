@@ -20,6 +20,16 @@ loginForm.addEventListener("submit", async (event) => {
     headers: headersList
   });
 
-  let data = await response.text();
-  console.log(data);
+  if (!response.ok) {
+    // Afficher un message d'erreur si la requête échoue
+    let errorData = await response.json();
+    alert(errorData.message);
+  } else {
+    // Stocker le token dans localStorage
+    let data = await response.json();
+    localStorage.setItem("token", data.token);
+
+    // Rediriger vers la page d'accueil si l'authentification réussit
+    window.location.href = "./index.html";
+  }
 });
