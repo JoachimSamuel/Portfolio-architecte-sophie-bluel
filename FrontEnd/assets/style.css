@@ -135,7 +135,7 @@ li:hover {
 	gap: 1rem;
 	align-items: center;
 	margin-top: 4em;
-	margin-bottom: 4em;
+	margin-bottom: 3em;
 }
 .filter_btn{
 	background-color: transparent;
@@ -149,6 +149,11 @@ li:hover {
 	font-weight: 700;
 	font-size: 16px;
 	line-height: 19.2px;
+}
+.filter_btn:hover{
+	background-color: #1D6154;
+	color: white;
+	cursor: pointer;
 }
 .gallery {
 	width: 100%;

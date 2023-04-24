@@ -14,5 +14,19 @@ fetch('http://localhost:5678/api/works')
       const gallery = document.querySelector('.gallery');
       gallery.appendChild(figure);
     });
+
+
+    // Filtres 
+    const dataFiltered = data.filter((projet, index) => {
+      if(projet.name === Appartements){
+        return projet
+      }
+    })
+    console.log(data);
+    console.log(dataFiltered);
   });
   
+
+
+
+
