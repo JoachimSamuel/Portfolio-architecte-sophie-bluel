@@ -28,6 +28,7 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+
 body {
 	line-height: 1;
 }
@@ -105,6 +106,7 @@ li:hover {
 #introduction {
 	display: flex;
 	align-items: center;
+	position: relative;
 }
 #introduction figure {
 	flex: 1
@@ -114,7 +116,10 @@ li:hover {
 	margin: auto;
 	width: 80%;
 }
-
+figure .modifier{
+	margin-left: 3.5rem;
+	margin-top: 1rem;
+}
 #introduction article {
 	flex: 1
 }
@@ -129,8 +134,9 @@ li:hover {
 	text-align: center;
 	margin-bottom: 1em;
 }
-.filter{
+#filters{
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
 	gap: 1rem;
 	align-items: center;
@@ -144,6 +150,11 @@ li:hover {
 	color: #1D6154;
 	padding: 0.5em;
 	aspect-ratio: 16/3;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 15rem;
+  
 
 	font-family:"Syne";
 	font-weight: 700;
@@ -151,6 +162,11 @@ li:hover {
 	line-height: 19.2px;
 }
 .filter_btn:hover{
+	background-color: #1D6154;
+	color: white;
+	cursor: pointer;
+}
+.filter_btn.active{
 	background-color: #1D6154;
 	color: white;
 	cursor: pointer;
@@ -216,3 +232,41 @@ footer nav ul {
 	margin: 2em
 }
 
+
+
+/***********************************/
+.modifier{
+	
+	
+
+}
+
+
+
+/***************************************
+
+/*EDITION MODE*/
+.editionMode{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: black;
+	gap: 1rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+.editionMode p{
+	color: white;
+}
+
+.editionMode button{
+	background-color: white;
+	border-radius: 60px;
+	border-color: white;
+	padding: 0.3em;
+	aspect-ratio: 16/3;
+	text-align: center;
+
+	font-family:"Syne";
+
+}

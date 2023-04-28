@@ -9,16 +9,16 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
-	<script src="./assets/script.js"></script>
+	
 </head>
 <body>
-<header>
+<header id="header">
 	<h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1>
 	<nav>
 		<ul>
 			<li><a href="#">Projets</a></li>
 			<li><a href="#">Contact</a></li>
-			<li><a href="./login.html">Login</a></li>
+			<li id="login"><a href="./login.html">Login</a></li>
 			<li><a href="#"><img src="./assets/icons/instagram.png" alt="Instagram"></a></li>
 		</ul>
 	</nav>
@@ -36,15 +36,15 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2 >Mes Projets</h2>
-		<div class="filter">
-		<button id="tous" 
+		<h2 id="projets">Mes Projets</h2>
+		<div id="filters">
+		<button id="Tous" 
 		class="filter_btn">Tous</button>
 		<button id="Objets" class="filter_btn">Objets</button>
 		<button id="Appartements" class="filter_btn">Appartements</button>
-		<button id="HotelsEtRestaurants" class="filter_btn">Hôtels & restaurants</button>
+		<button id="Hotels&Restaurants" class="filter_btn">Hôtels & restaurants</button>
 		</div>
-		<div  class="gallery">
+		<div id="gallery" class="gallery">
 		</div>
 	</section>
 	<section id="contact">
@@ -69,5 +69,6 @@
 		</ul>
 	</nav>
 </footer>
+<script src="./assets/script.js"></script>
 </body>
 </html>

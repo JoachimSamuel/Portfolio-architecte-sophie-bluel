@@ -23,7 +23,10 @@ loginForm.addEventListener("submit", async (event) => {
   if (!response.ok) {
     // Afficher un message d'erreur si la requête échoue
     let errorData = await response.json();
-    alert(errorData.message);
+    const error= document.createElement("p");
+    error.textContent = "Mot de passe/ e-mail incorect"
+    document.body.appendChild(error);
+    alert("Mot de passe/ e-mail incorect");
   } else {
     // Stocker le token dans localStorage
     let data = await response.json();
@@ -31,5 +34,5 @@ loginForm.addEventListener("submit", async (event) => {
 
     // Rediriger vers la page d'accueil si l'authentification réussit
     window.location.href = "./index.html";
-  }
-});
+        }
+  });

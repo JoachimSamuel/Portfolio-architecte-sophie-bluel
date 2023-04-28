@@ -88,6 +88,9 @@ h2{
     margin-top: 3rem;
     margin-bottom: 2rem;
 }
+p{
+	text-align: center;
+}
 nav ul {
 	display: flex;
 	align-items: center;
@@ -134,4 +137,5 @@ input[type="submit"]{
     align-items: center; 
     width: 100%;
 }
+
 
