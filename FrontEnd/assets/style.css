@@ -233,16 +233,6 @@ footer nav ul {
 }
 
 
-
-/***********************************/
-.modifier{
-	
-	
-
-}
-
-
-
 /***************************************
 
 /*EDITION MODE*/
@@ -258,7 +248,20 @@ footer nav ul {
 .editionMode p{
 	color: white;
 }
-
+.figure-modifier{
+	padding-top: 1rem;
+	text-align: center;
+}
+.Projets{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1em;
+	margin-bottom: 3rem;
+}
+.Projets h2{
+margin-bottom: 0 !important;
+}
 .editionMode button{
 	background-color: white;
 	border-radius: 60px;
@@ -268,5 +271,75 @@ footer nav ul {
 	text-align: center;
 
 	font-family:"Syne";
-
 }
+
+
+
+
+
+
+.modal {
+	display: none; 
+	position: fixed; 
+	z-index: 1; 
+	left: 0;
+	top: 0;
+	width: 100%; 
+	height: 100%;
+	overflow: auto; 
+	background-color: rgb(0,0,0); 
+	background-color: rgba(0,0,0,0.4); 
+}
+
+
+
+
+/* Styles pour la modal */
+h3{
+	font-family: 'Work Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 26px;
+	line-height: 30px;
+}
+
+#modifier-Projet:hover{
+	color:#1D6154;
+ 	cursor: pointer;
+}
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+	display: none; /* Masquer la modal par défaut */
+  }
+  
+  .modal-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 5px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background-color: transparent;
+	border: none;
+	font-size: 20px;
+	cursor: pointer;
+  }
+  
+  .modal-close:hover {
+	color: #B1663C;
+  }
+
