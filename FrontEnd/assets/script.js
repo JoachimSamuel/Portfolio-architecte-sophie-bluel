@@ -14,35 +14,40 @@ fetch('http://localhost:5678/api/works')
       figure.appendChild(title);
       gallery.appendChild(figure);
     });
-
+  
     // Filtres 
-let filters = document.querySelectorAll("#filters button");
+    let filters = document.querySelectorAll("#filters button");
 
-//Ecouter le bouton cliqué
-for(let filter of filters){
-  filter.addEventListener("click", function(){
-    let tag = this.id;
-    let images = document.querySelectorAll('.gallery img');
-    for(let image of images) {
-      if(tag === 'Tous' || image.getAttribute('data-category') === tag) {
-        image.parentElement.style.display = "block"; // Afficher l'élément parent
-      } 
-      else { 
-        image.parentElement.style.display = "none"; // Cacher l'élément parent
-      }
+    const idmapping = { 
+      "Objets": "Objets",
+      "Appartements": "Appartements",
+      "Hôtel & restaurants": "HotelEtRestaurants"
     }
-    
-    // Ajouter ou supprimer la classe "active"
-    for(let i=0; i<filters.length; i++) {
-      if(filters[i].classList.contains("active")) {
-        filters[i].classList.remove("active");
-      }
-    }
-    this.classList.add("active");
-  });
-}
 
+    //Ecouter le bouton cliqué
+    for(let filter of filters){
+      filter.addEventListener("click", function(){
+        let tag = this.id;
+        let images = document.querySelectorAll('.gallery img');
+        for(let image of images) {
+          if(tag === 'Tous' || image.getAttribute('data-category') === tag) {
+            image.parentElement.style.display = "block"; // Afficher l'élément parent
+          } 
+          else { 
+            image.parentElement.style.display = "none"; // Cacher l'élément parent
+          }
+        }
+        
+        // Ajouter ou supprimer la classe "active"
+        for(let i=0; i<filters.length; i++) {
+          if(filters[i].classList.contains("active")) {
+            filters[i].classList.remove("active");
+          }
+        }
+        this.classList.add("active");
       });
+    }
+  }); 
 
   // Mettre à jour la page d'accueil si le token est présent
 if(localStorage.getItem("token")) {
@@ -88,14 +93,20 @@ if(localStorage.getItem("token")) {
     
     // BTN modifier
     const figure = document.querySelector('figure');
+    figure.id = "figureContainer"
 
     // Créer un nouvel élément à ajouter à la <figure>
-    const image = document.createElement('p');
-    image.textContent = "Modifier";
-    image.className  = "figure-modifier";
-    
-    // Ajouter l'image à la <figure>
-    figure.appendChild(image);
+    const figureTexte = document.createElement('div');
+    figureTexte.className = "figureTexte"
+    const modifierLogo = document.createElement('i')
+    modifierLogo.className = "fa-solid fa-pen-to-square";
+    const modifier = document.createElement('p');
+    modifier.textContent = "Modifier";
+    modifier.className  = "figure-modifier";
+  
+    figureTexte.appendChild(modifier);
+    figureTexte.appendChild(modifierLogo);
+    figure.appendChild(figureTexte)
     
     // Sélectionner la balise <section id="portfolio">
     const portfolio = document.querySelector('#portfolio');
@@ -104,79 +115,204 @@ if(localStorage.getItem("token")) {
     projetDiv.className = "Projets";
     
     // Créer un nouvel élément à ajouter à la <div> Projets
+    const modifierTetxe = document.createElement('div');
+    modifierTetxe.className = "modifier-texte";
+  
+    const descriptionLogo = document.createElement('i');
+    descriptionLogo.className = "fa-solid fa-pen-to-square";
+    
     const description = document.createElement('p');
     description.id = "modifier-Projet"
+    
     const title = document.createElement('h2')
     description.textContent = 'Modifier';
     title.textContent = "Mes Projets";
     
-    projetDiv.appendChild(title)
-    projetDiv.appendChild(description)
+    projetDiv.appendChild(title);
+    modifierTetxe.appendChild(descriptionLogo);
+    modifierTetxe.appendChild(description);
+    projetDiv.appendChild(modifierTetxe);
     portfolio.insertBefore(projetDiv, portfolio.querySelector('#gallery'));
 
-    //Modal
+    //Modal Gallerie Photo
+    function createGallery() {
+      const gallery = document.createElement('div');
+      works.forEach(data => {
+        const img = document.createElement('img');
+        img.src = data.imageUrl;
+        img.setAttribute('data-category', data.category.name);
+        gallery.appendChild(img);
+      });
+      return gallery;
+    }
 
+    fetch('http://localhost:5678/api/works')
+    .then(r => r.json())
+    .then(data => {
+      works = data;
+      const gallery = document.querySelector('.gallery');
+      data.forEach(work => {
+        const imgURL = document.createElement("img");
+        imgURL.src = work.imageUrl;
+        imgURL.setAttribute("data-category", work.category.name); 
+      });
+  
       // Récupérer la div qui contiendra la modale
-const modalContainer = document.querySelector('#gallery');
-
-// Créer les éléments HTML pour la modale
-const modalOverlay = document.createElement('div');
-modalOverlay.classList.add('modal-overlay');
-
-const modalContent = document.createElement('div');
-modalContent.classList.add('modal-content');
-
-const modalCloseButton = document.createElement('button');
-modalCloseButton.classList.add('modal-close');
-modalCloseButton.textContent = 'X';
-
-const modalTitle = document.createElement('h3');
-modalTitle.textContent = 'Gallerie photo';
-
-const modalText = document.createElement('p');
-modalText.textContent = 'Contenu de la modale';
-
-// Ajouter les éléments à la modale
-modalContent.appendChild(modalCloseButton);
-modalContent.appendChild(modalTitle);
-modalContent.appendChild(modalText);
-modalOverlay.appendChild(modalContent);
-
-// Ajouter la modale à la page
-modalContainer.appendChild(modalOverlay);
-
-// Ajouter un événement au bouton de fermeture
-modalCloseButton.addEventListener('click', function() {
-  modalOverlay.style.display = 'none';
-});
-
-// Ajouter un événement au bouton qui ouvre la modale
-const modalOpenButton = document.querySelector('#modifier-Projet');
-modalOpenButton.addEventListener('click', function() {
-  modalOverlay.style.display = 'block';
-});
-
-
-
-
-
-    //const modal = document.getElementById('gallery');
-    //const btnModifier = document.getElementById('modifier-Projet');
+      const modalContainer = document.querySelector('#gallery');
+  
+      // Créer les éléments HTML pour la modale
+      const modalOverlay = document.createElement('div');
+      modalOverlay.classList.add('modal-overlay');
+  
+      const modalContent = document.createElement('div');
+      modalContent.classList.add('modal-content');
+  
+      const modalCloseButton = document.createElement('button');
+      modalCloseButton.classList.add('modal-close');
+      modalCloseButton.textContent = 'X';
+  
+      const modalTitle = document.createElement('h3');
+      modalTitle.textContent = 'Galerie photo';
+      modalTitle.classList.add("modal-title");
+  
+      const modalImageContainer = document.createElement('div');
+      modalImageContainer.classList.add('modal-image-container');
+      modalImageContainer.id = "modalImageContainer";
+  
+      // Ajouter les images à la div modal-image-container
+      works.forEach(work => {
+        const imgDiv = document.createElement('div');
+        imgDiv.classList.add('modal-image');
+        const img = document.createElement('img');
+        img.src = work.imageUrl;
+        img.setAttribute('data-work-id', work.id); // Stocker l'ID de l'oeuvre dans l'attribut data
+        const textEditer = document.createElement('p');
+        textEditer.textContent = "éditer";
+        imgDiv.appendChild(img);
+        imgDiv.appendChild(textEditer);
+        modalImageContainer.appendChild(imgDiv);
       
-   // btnModifier.addEventListener("click", openModal);
-    
-    //function openModal() {
-    //  const divModal = document.getElementById("gallery");
-    //  console.log(divModal);
+        // Ajouter un événement click à l'image pour supprimer 
+        img.addEventListener('click', async (event) => {
+          const workId = event.target.getAttribute('data-work-id');
+           // Récupérer l'ID depuis l'attribut data
+           const myHeaders = new Headers();
+           const token = localStorage.getItem('token')
+           myHeaders.append('Authorization', `Bearer ${token}`);
+          let deleteResponse = await fetch(`http://localhost:5678/api/works/${workId}`, { method: 'DELETE',
+          headers: myHeaders });
+          if (deleteResponse.ok) {
+            imgDiv.remove();
+          } 
+        });
+      });
+      
+      // Ajoute les btn de validation
+      const btnAjouterUnePhoto = document.createElement('button');
+      btnAjouterUnePhoto.textContent = 'Ajouter une photo'
+      btnAjouterUnePhoto.classList.add('btn-ajouter');
+      btnAjouterUnePhoto.id = "btnAjouterUnePhoto"
+      const supprimerLaGallery = document.createElement('p');
+      supprimerLaGallery.textContent = 'Supprimer la galerie'; 
+      supprimerLaGallery.classList.add('modal-btn-suprimer')
+      supprimerLaGallery.id = "modalBtnSuprimer";
 
-    //  const modalImg = document.createElement('p');
-    //  modalImg.innerHTML = "test";
-    //  modal.appendChild(modalImg);
-   // }
-     
-    
+      // Ajouter les éléments à la modale
+      modalContent.appendChild(modalCloseButton);
+      modalContent.appendChild(modalTitle);
+      modalContent.appendChild(btnAjouterUnePhoto);
+      modalContent.appendChild(supprimerLaGallery);
+      modalContent.appendChild(modalImageContainer);
+      modalOverlay.appendChild(modalContent);
+  
+      // Ajouter la modale à la page
+      modalContainer.appendChild(modalOverlay);
 
+      //Déplacer les élements
+      modalImageContainer.insertAdjacentElement("afterend", btnAjouterUnePhoto);
+      btnAjouterUnePhoto.insertAdjacentElement("afterend", supprimerLaGallery);
 
-    
+      // Ajouter un événement au bouton de fermeture
+      modalCloseButton.addEventListener('click', function() {
+        modalOverlay.style.display = 'none';
+      });
+  
+      // Ajouter un événement au bouton qui ouvre la modale
+      const modalOpenButton = document.querySelector('#modifier-Projet');
+      modalOpenButton.addEventListener('click', function() {
+        modalOverlay.style.display = 'block';
+      });
 
+      //Ajouter un événement au bouton "Ajouter une photo", pour changer l'apparence de la modal
+      btnAjouterUnePhoto.addEventListener('click', () => {
+        //Ajouter les nouveaux éléments de la modal
+        const modalReturnButton = document.createElement('button');
+        modalReturnButton.classList = 'fa-solid fa-arrow-left modal-return';
+        // Ajouter un événement au bouton de fermeture
+        modalReturnButton.addEventListener('click', () =>{
+          window.history.back();
+        });
+        //Panneau photo
+        const divAjoutImg = document.createElement('div');
+        divAjoutImg.classList = "ajouter-image";
+
+        const logoAjoutImg = document.createElement('i');
+        logoAjoutImg.classList = 'fa-solid fa-image';
+
+        const btnAjouterImg = document.createElement('button');
+        btnAjouterImg.classList.add('ajouter-btn');
+        btnAjouterImg.textContent = '+ Ajouter photo';
+
+        const texteAjoutImg = document.createElement('p');
+        texteAjoutImg.classList.add('ajouter-text');
+        texteAjoutImg.textContent = "jpg, png : 4mo max"
+       
+        //Input Titre
+        const divInput = document.createElement('div');
+        divInput.classList = "ajouter-input";
+
+        const divInputTitle = document.createElement('div');
+        divInputTitle.classList = 'ajouter-input-div';
+        const inputTitle = document.createElement('p');
+        inputTitle.classList = 'ajouter-input-title';
+        inputTitle.textContent = "Titre";
+        const Input = document.createElement('input');
+        Input.classList = 'ajouter-input-input';
+        divInputTitle.appendChild(inputTitle);
+        divInputTitle.appendChild(Input)
+        //Menu Déroulant
+        const divInputcategory = document.createElement('div');
+        divInputcategory.classList = 'ajouter-input-div';
+        const inputCategoryTitle = document.createElement('p');
+        inputCategoryTitle.classList = 'ajouter-input-title';
+        inputCategoryTitle.textContent = "Catégorie";
+        const inputCategory = document.createElement('input');
+        inputCategory.classList = 'ajouter-input-input';
+        divInputcategory.appendChild(inputCategoryTitle);
+        divInputcategory.appendChild(inputCategory);
+        
+        //Boutton Valider
+        const btnValider = document.createElement('button');
+        btnValider.classList.add('ajouter-btn-valider');  
+        btnValider.textContent = 'Valider';
+
+        //Ajout à la modal
+        divAjoutImg.appendChild(logoAjoutImg);
+        divAjoutImg.appendChild(btnAjouterImg);
+        divAjoutImg.appendChild(texteAjoutImg);
+        divInput.appendChild(divInputTitle);
+        divInput.appendChild(divInputcategory);
+        modalContent.appendChild(modalReturnButton);
+        modalContent.appendChild(divAjoutImg);
+        modalContent.appendChild(divInput);
+        modalContent.appendChild(btnValider);
+
+        //Supprimer les éléments
+        document.getElementById('modalBtnSuprimer').remove();
+        document.getElementById('modalImageContainer').remove();
+        document.getElementById('btnAjouterUnePhoto').remove();
+        //Modifier le titre
+        modalTitle.textContent = "Ajout photo";
+      })
+    }); 
 }

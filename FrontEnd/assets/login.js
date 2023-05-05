@@ -22,11 +22,22 @@ loginForm.addEventListener("submit", async (event) => {
 
   if (!response.ok) {
     // Afficher un message d'erreur si la requête échoue
+    const inputEmail = document.querySelector("#inputEmail");
+    const inputPassword = document.querySelector("#inputPassword");
+ 
     let errorData = await response.json();
-    const error= document.createElement("p");
-    error.textContent = "Mot de passe/ e-mail incorect"
-    document.body.appendChild(error);
-    alert("Mot de passe/ e-mail incorect");
+    const errorEmail= document.createElement("p");
+    errorEmail.textContent = "E-mail incorect";
+    errorEmail.classList.add("error-login");
+    
+    const errorPassword= document.createElement("p");
+    errorPassword.textContent = "Mot de passe incorect";
+    errorPassword.classList.add("error-login");
+    
+    inputEmail.insertAdjacentElement('afterend',errorEmail);
+    inputPassword.insertAdjacentElement('afterend',errorPassword);
+    inputEmail.appendChild(errorEmail);
+    inputPassword.appendChild(errorPassword);
   } else {
     // Stocker le token dans localStorage
     let data = await response.json();

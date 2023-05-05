@@ -138,4 +138,8 @@ input[type="submit"]{
     width: 100%;
 }
 
+.error-login{
+	color: #B1663C;
+
+}
 
