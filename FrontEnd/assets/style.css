@@ -324,7 +324,7 @@ h3{
 	flex-direction: column;
 	position: absolute;
 	align-items: center;
-	width: 30%;
+
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -339,6 +339,7 @@ h3{
 	margin-bottom: 2rem;
   }
 .modal-image-container{
+	
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
@@ -347,12 +348,23 @@ h3{
 	
 }
 .modal-image{
+	position: relative;
 	width: 90px;
 	margin: 0.5rem;	
 }
-.modal-image:hover{
+
+#modalTrash{
+	position: absolute;
+	display: flex;
+	font-size: 1rem;
+	color: white;
+	right: 5px;
+	background-color: black;
+	border: 3px solid black;
+}
+#modalTrash:hover{
 	cursor: pointer;
-	opacity: 0.33;
+	color: #B1663C;
 }
 .btn-ajouter{
 	border-radius: 60px;
@@ -419,7 +431,11 @@ h3{
 }
 
 /*Ajout photo*/
-
+#ajouterFormulaire{
+	align-items: center;
+    display: flex;
+    flex-direction: column;
+}
 .ajouter-image{
 	display: flex;
 	flex-direction: column;
@@ -456,8 +472,7 @@ h3{
 }
 .ajouter-input-input{
     border: none;
-    box-shadow: 1px 5px 5px black; 
-    opacity: 0.3;
+    box-shadow: 2px 1px 3px grey; 
     width: 100%; 
     height: 30px;  
     margin-top: 0.3rem;
@@ -470,10 +485,33 @@ h3{
 	font-weight: 700;
 	color: white;
 	background-color: #A7A7A7;
-	width: 30%;
+	width: 40%;
 	text-align: center;
 	border-radius: 60px ;
     height: 25px;
     border: none;
    height: 50px;
+}
+
+.ajouter-btn-valider:hover{
+	background-color: #1D6154;
+	cursor: pointer;
+}
+
+
+select option {
+	display: block;
+	width: 100%;
+	height: 100%;
+	padding: 5px 10px;
+	background-color: #fff;
+	color: #000;
+  }
+
+
+.all-fields-filled{
+	background-color: #1D6154;
+	color:red;
+	width: 10%;
+
 }

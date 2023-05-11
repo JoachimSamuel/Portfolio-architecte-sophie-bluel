@@ -79,7 +79,6 @@ if(localStorage.getItem("token")) {
 
     editionMode.appendChild(newParagraph);
     editionMode.appendChild(newButton);
-
     editionMode.classList.add("editionMode");
   
   
@@ -135,6 +134,7 @@ if(localStorage.getItem("token")) {
     portfolio.insertBefore(projetDiv, portfolio.querySelector('#gallery'));
 
     //Modal Gallerie Photo
+
     function createGallery() {
       const gallery = document.createElement('div');
       works.forEach(data => {
@@ -178,7 +178,7 @@ if(localStorage.getItem("token")) {
       const modalImageContainer = document.createElement('div');
       modalImageContainer.classList.add('modal-image-container');
       modalImageContainer.id = "modalImageContainer";
-  
+
       // Ajouter les images à la div modal-image-container
       works.forEach(work => {
         const imgDiv = document.createElement('div');
@@ -188,13 +188,18 @@ if(localStorage.getItem("token")) {
         img.setAttribute('data-work-id', work.id); // Stocker l'ID de l'oeuvre dans l'attribut data
         const textEditer = document.createElement('p');
         textEditer.textContent = "éditer";
+        const modalTrash = document.createElement('span');
+        modalTrash.classList = 'fa-solid fa-trash';
+        modalTrash.id = "modalTrash";
+        imgDiv.appendChild(modalTrash);
         imgDiv.appendChild(img);
         imgDiv.appendChild(textEditer);
         modalImageContainer.appendChild(imgDiv);
       
         // Ajouter un événement click à l'image pour supprimer 
-        img.addEventListener('click', async (event) => {
-          const workId = event.target.getAttribute('data-work-id');
+        modalTrash.addEventListener('click', async (event) => {
+          console.log(event.target.nextSibling);
+          const workId = event.target.nextSibling.getAttribute('data-work-id');
            // Récupérer l'ID depuis l'attribut data
            const myHeaders = new Headers();
            const token = localStorage.getItem('token')
@@ -231,7 +236,7 @@ if(localStorage.getItem("token")) {
       //Déplacer les élements
       modalImageContainer.insertAdjacentElement("afterend", btnAjouterUnePhoto);
       btnAjouterUnePhoto.insertAdjacentElement("afterend", supprimerLaGallery);
-
+    
       // Ajouter un événement au bouton de fermeture
       modalCloseButton.addEventListener('click', function() {
         modalOverlay.style.display = 'none';
@@ -242,16 +247,17 @@ if(localStorage.getItem("token")) {
       modalOpenButton.addEventListener('click', function() {
         modalOverlay.style.display = 'block';
       });
-
+    
       //Ajouter un événement au bouton "Ajouter une photo", pour changer l'apparence de la modal
       btnAjouterUnePhoto.addEventListener('click', () => {
         //Ajouter les nouveaux éléments de la modal
+        const modalForm = document.createElement('form');
+        modalForm.id = "ajouterFormulaire"
         const modalReturnButton = document.createElement('button');
         modalReturnButton.classList = 'fa-solid fa-arrow-left modal-return';
         // Ajouter un événement au bouton de fermeture
-        modalReturnButton.addEventListener('click', () =>{
-          window.history.back();
-        });
+        modalReturnButton.addEventListener('click',(modalOpenButton));
+        console.log()
         //Panneau photo
         const divAjoutImg = document.createElement('div');
         divAjoutImg.classList = "ajouter-image";
@@ -259,13 +265,29 @@ if(localStorage.getItem("token")) {
         const logoAjoutImg = document.createElement('i');
         logoAjoutImg.classList = 'fa-solid fa-image';
 
-        const btnAjouterImg = document.createElement('button');
+        const btnAjouterImg = document.createElement('input');
+        btnAjouterImg.type = 'file'
         btnAjouterImg.classList.add('ajouter-btn');
         btnAjouterImg.textContent = '+ Ajouter photo';
 
         const texteAjoutImg = document.createElement('p');
         texteAjoutImg.classList.add('ajouter-text');
         texteAjoutImg.textContent = "jpg, png : 4mo max"
+
+        btnAjouterImg.addEventListener('change', (event) => {
+
+          // On récupère le ficiher sélectionné
+          const fichier = event.target.files[0];
+          //Créer un url d'objet pour le fichier 
+          const url = URL.createObjectURL(fichier);
+          //Créer un élément "img" 
+          const img =document.createElement('img');
+          img.src = url;
+          
+          //Ajouter l'image au panneau photo
+          divAjoutImg.appendChild(img);
+        });
+        
        
         //Input Titre
         const divInput = document.createElement('div');
@@ -283,18 +305,75 @@ if(localStorage.getItem("token")) {
         //Menu Déroulant
         const divInputcategory = document.createElement('div');
         divInputcategory.classList = 'ajouter-input-div';
+        
+        const selectCategory = document.createElement('select');
+        selectCategory.classList = 'ajouter-input-input';
+        
         const inputCategoryTitle = document.createElement('p');
         inputCategoryTitle.classList = 'ajouter-input-title';
         inputCategoryTitle.textContent = "Catégorie";
-        const inputCategory = document.createElement('input');
-        inputCategory.classList = 'ajouter-input-input';
-        divInputcategory.appendChild(inputCategoryTitle);
-        divInputcategory.appendChild(inputCategory);
+      
+        const option1 = document.createElement('option');
+        option1.id = 1; 
+        option1.textContent = 'Objets';
         
-        //Boutton Valider
+        const option2 = document.createElement('option');
+        option1.id = 2;
+        option2.textContent = 'Appartements';
+        
+        const option3 = document.createElement('option');
+        option1.id = 3;
+        option3.textContent = 'Hôtel & restaurants';
+        
+        selectCategory.appendChild(option1);
+        selectCategory.appendChild(option2);
+        selectCategory.appendChild(option3);
+        
+        divInputcategory.appendChild(inputCategoryTitle);
+        divInputcategory.appendChild(selectCategory);
+        
+     
+        // Bouton Valider
         const btnValider = document.createElement('button');
         btnValider.classList.add('ajouter-btn-valider');  
         btnValider.textContent = 'Valider';
+
+        const imgForm = document.querySelector("form");
+        imgForm.addEventListener('submit', addImg);
+
+
+        async function addImg(e) {
+          e.preventDefault();
+        
+          const token = localStorage.getItem('token');
+        
+          const formData = new FormData();
+          formData.append('title', Input.value);
+          const categoryID = selectCategory.options[selectCategory.selectedIndex].id;
+          formData.append('category', categoryID);
+          const imgFile = document.querySelector('input[type=file]').files[0];
+          formData.append('image', imgFile);
+        
+          const response = await fetch('http://localhost:5678/api/works', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+        
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+        
+          const data = await response.json();
+          console.log('Data received from API:', data);
+        }
+        const imgForm1 = document.querySelector('form');
+        imgForm1.addEventListener('submit', addImg);
+        modalForm.addEventListener('submit', addImg);
+        btnValider.addEventListener('click', addImg);
+      
 
         //Ajout à la modal
         divAjoutImg.appendChild(logoAjoutImg);
@@ -303,9 +382,10 @@ if(localStorage.getItem("token")) {
         divInput.appendChild(divInputTitle);
         divInput.appendChild(divInputcategory);
         modalContent.appendChild(modalReturnButton);
-        modalContent.appendChild(divAjoutImg);
-        modalContent.appendChild(divInput);
-        modalContent.appendChild(btnValider);
+        modalForm.appendChild(divAjoutImg);
+        modalForm.appendChild(divInput);
+        modalContent.appendChild(modalForm)
+        modalForm.appendChild(btnValider);
 
         //Supprimer les éléments
         document.getElementById('modalBtnSuprimer').remove();
@@ -315,4 +395,5 @@ if(localStorage.getItem("token")) {
         modalTitle.textContent = "Ajout photo";
       })
     }); 
+  
 }
