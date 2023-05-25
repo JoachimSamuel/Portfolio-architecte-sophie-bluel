@@ -1,53 +1,64 @@
 // Afficher les images 
+const gallery = document.querySelector('.gallery');
+
+const createImageElement = (work) => {
+  const imgURL = document.createElement("img");
+  const title = document.createElement("figcaption");
+
+  imgURL.src = work.imageUrl;
+  imgURL.setAttribute("data-category", work.category.name);
+  title.innerText = work.title;
+
+  const figure = document.createElement("figure");
+  figure.appendChild(imgURL);
+  figure.appendChild(title);
+
+  return figure;
+};
+
+// Filtres 
+const filters = document.querySelectorAll("#filters button");
+
+const filterClickHandler = (tag) => {
+
+const images = document.querySelectorAll('.gallery img');
+
+
+  for (const image of images) {
+    
+    if (tag === 'Tous' || image.getAttribute('data-category') === tag) {
+      image.parentElement.style.display = "block"; // Afficher l'élément parent
+    } else {
+      image.parentElement.style.display = "none"; // Cacher l'élément parent
+      }
+  }
+
+  // Ajouter ou supprimer la classe "active"
+  filters.forEach(filter => {
+    if (filter.classList.contains("active")) {
+      filter.classList.remove("active");
+    }
+  });
+
+  this.classList.add("active");
+};
+
+    filters.forEach(filter => {
+      filter.addEventListener("click", function() {
+        const tag = this.id;
+        filterClickHandler(tag);
+      });
+    });
+
 fetch('http://localhost:5678/api/works')
   .then(r => r.json())
   .then(data => {
-    const gallery = document.querySelector('.gallery');
+
     data.forEach(work => {
-      const imgURL = document.createElement("img");
-      const title = document.createElement("figcaption");
-      imgURL.src = work.imageUrl;
-      imgURL.setAttribute("data-category", work.category.name); // Utiliser le nom de la catégorie
-      title.innerText = work.title;
-      const figure = document.createElement("figure");
-      figure.appendChild(imgURL);
-      figure.appendChild(title);
-      gallery.appendChild(figure);
+      const imageElement = createImageElement(work);
+      gallery.appendChild(imageElement);
     });
-  
-    // Filtres 
-    let filters = document.querySelectorAll("#filters button");
-
-    const idmapping = { 
-      "Objets": "Objets",
-      "Appartements": "Appartements",
-      "Hôtel & restaurants": "HotelEtRestaurants"
-    }
-
-    //Ecouter le bouton cliqué
-    for(let filter of filters){
-      filter.addEventListener("click", function(){
-        let tag = this.id;
-        let images = document.querySelectorAll('.gallery img');
-        for(let image of images) {
-          if(tag === 'Tous' || image.getAttribute('data-category') === tag) {
-            image.parentElement.style.display = "block"; // Afficher l'élément parent
-          } 
-          else { 
-            image.parentElement.style.display = "none"; // Cacher l'élément parent
-          }
-        }
-        
-        // Ajouter ou supprimer la classe "active"
-        for(let i=0; i<filters.length; i++) {
-          if(filters[i].classList.contains("active")) {
-            filters[i].classList.remove("active");
-          }
-        }
-        this.classList.add("active");
-      });
-    }
-  }); 
+  });
 
   // Mettre à jour la page d'accueil si le token est présent
 if(localStorage.getItem("token")) {
@@ -81,9 +92,14 @@ if(localStorage.getItem("token")) {
     editionMode.appendChild(newButton);
     editionMode.classList.add("editionMode");
   
-  
     let currentDiv = document.getElementById("header");
     document.body.insertBefore(editionMode, currentDiv);
+
+    // Mettre à jour le contenu de la page d'accueil
+    console.log(newButton)
+    newButton.addEventListener('click', () => {
+     
+    });
 
     // Suprimer les filtres
     document.getElementById('filters').remove();
@@ -135,7 +151,7 @@ if(localStorage.getItem("token")) {
 
     //Modal Gallerie Photo
 
-    function createGallery() {
+    function createGallery(works) {
       const gallery = document.createElement('div');
       works.forEach(data => {
         const img = document.createElement('img');
@@ -145,8 +161,8 @@ if(localStorage.getItem("token")) {
       });
       return gallery;
     }
-
-    fetch('http://localhost:5678/api/works')
+    
+    fetch('http://localhost:5678/api/works')// Appeler fetchWork
     .then(r => r.json())
     .then(data => {
       works = data;
@@ -156,7 +172,7 @@ if(localStorage.getItem("token")) {
         imgURL.src = work.imageUrl;
         imgURL.setAttribute("data-category", work.category.name); 
       });
-  
+      
       // Récupérer la div qui contiendra la modale
       const modalContainer = document.querySelector('#gallery');
   
@@ -180,6 +196,7 @@ if(localStorage.getItem("token")) {
       modalImageContainer.id = "modalImageContainer";
 
       // Ajouter les images à la div modal-image-container
+        
       works.forEach(work => {
         const imgDiv = document.createElement('div');
         imgDiv.classList.add('modal-image');
@@ -205,13 +222,15 @@ if(localStorage.getItem("token")) {
            const token = localStorage.getItem('token')
            myHeaders.append('Authorization', `Bearer ${token}`);
           let deleteResponse = await fetch(`http://localhost:5678/api/works/${workId}`, { method: 'DELETE',
-          headers: myHeaders });
+          headers: myHeaders 
+          });
           if (deleteResponse.ok) {
             imgDiv.remove();
           } 
         });
       });
-      
+    
+    
       // Ajoute les btn de validation
       const btnAjouterUnePhoto = document.createElement('button');
       btnAjouterUnePhoto.textContent = 'Ajouter une photo'
@@ -247,6 +266,7 @@ if(localStorage.getItem("token")) {
       modalOpenButton.addEventListener('click', function() {
         modalOverlay.style.display = 'block';
       });
+      
     
       //Ajouter un événement au bouton "Ajouter une photo", pour changer l'apparence de la modal
       btnAjouterUnePhoto.addEventListener('click', () => {
@@ -314,15 +334,15 @@ if(localStorage.getItem("token")) {
         inputCategoryTitle.textContent = "Catégorie";
       
         const option1 = document.createElement('option');
-        option1.id = 1; 
+        option1.id = "1";
         option1.textContent = 'Objets';
         
         const option2 = document.createElement('option');
-        option1.id = 2;
+        option2.id = "2";
         option2.textContent = 'Appartements';
         
         const option3 = document.createElement('option');
-        option1.id = 3;
+        option3.id = "3";        
         option3.textContent = 'Hôtel & restaurants';
         
         selectCategory.appendChild(option1);
@@ -344,6 +364,7 @@ if(localStorage.getItem("token")) {
 
         async function addImg(e) {
           e.preventDefault();
+
         
           const token = localStorage.getItem('token');
         
@@ -351,8 +372,19 @@ if(localStorage.getItem("token")) {
           formData.append('title', Input.value);
           const categoryID = selectCategory.options[selectCategory.selectedIndex].id;
           formData.append('category', categoryID);
+          console.log( categoryID)
           const imgFile = document.querySelector('input[type=file]').files[0];
           formData.append('image', imgFile);
+
+
+            // Vérifier si les champs nécessaires ont une valeur
+            if (!Input.value || !selectCategory.value || !imgFile) {
+             const defMessage = document.createElement("div");
+              defMessage.classList.add('def-message');
+              defMessage.textContent = 'Erreur : Champ manquant';
+              document.body.appendChild(defMessage);
+              return;
+                }
         
           const response = await fetch('http://localhost:5678/api/works', {
             method: 'POST',
@@ -365,9 +397,15 @@ if(localStorage.getItem("token")) {
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
-        
+          const defMessage = document.createElement("div");
+          defMessage.classList.add('def-message');
+          defMessage.textContent = 'Erreur : Champ manquant';
+          console.log(defMessage)        
           const data = await response.json();
           console.log('Data received from API:', data);
+          if (response.ok) {
+              modalOverlay.style.display = 'none';  //Metrre la fonction de retour ICI
+            };
         }
         const imgForm1 = document.querySelector('form');
         imgForm1.addEventListener('submit', addImg);

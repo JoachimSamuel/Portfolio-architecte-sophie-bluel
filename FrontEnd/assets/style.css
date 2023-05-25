@@ -53,6 +53,7 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
+	
 }
 header {
 	display: flex;
@@ -262,6 +263,9 @@ footer nav ul {
 .Projets h2{
 margin-bottom: 0 !important;
 }
+.Projets p, i{
+	font-size: 0.6rem ;
+}
 .editionMode button{
 	background-color: white;
 	border-radius: 60px;
@@ -324,6 +328,7 @@ h3{
 	flex-direction: column;
 	position: absolute;
 	align-items: center;
+	width: 25%;
 
 	top: 50%;
 	left: 50%;
@@ -424,6 +429,7 @@ h3{
 	align-items: baseline;
 	justify-content: center;
 	gap: 0.1rem;
+	font-size: 0.6rem;
 }
 .modifier-texte{
 	display: flex;
@@ -442,19 +448,23 @@ h3{
 	align-items: center;
 	background-color: #E8F1F6;
 	border-radius: 3px;
-	width: 40%;
+	width: 25%;
+	height: 45%;
 	padding-left: 90px;
 	padding-right: 90px;
 	margin-bottom: 2rem;
 }
+.ajouter-image img{
+	max-height: 100%;
+}
 .ajouter-btn{
-	border: none;
+
 	color: #306685;
 	background-color: #CBD6DD;
 	border-radius: 100px;
 	padding: 0.5rem ;
-	padding-left: 3em;
-	padding-right: 3em;
+	margin-left: 3em;
+	margin-right: 3em;
 }
 .fa-image{
 	margin-top: 1.5rem;
