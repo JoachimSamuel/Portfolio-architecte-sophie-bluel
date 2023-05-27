@@ -16,7 +16,7 @@ const createImageElement = (work) => {
   return figure;
 };
 
-// Filtres 
+// Filtres  mettre data categorir voir message 14:13
 const filters = document.querySelectorAll("#filters button");
 
 const filterClickHandler = (tag) => {
@@ -150,7 +150,7 @@ if(localStorage.getItem("token")) {
     portfolio.insertBefore(projetDiv, portfolio.querySelector('#gallery'));
 
     //Modal Gallerie Photo
-
+//sortir la fucntion du if et appeler 
     function createGallery(works) {
       const gallery = document.createElement('div');
       works.forEach(data => {
@@ -161,7 +161,7 @@ if(localStorage.getItem("token")) {
       });
       return gallery;
     }
-    
+    //  a suprimer 
     fetch('http://localhost:5678/api/works')// Appeler fetchWork
     .then(r => r.json())
     .then(data => {
