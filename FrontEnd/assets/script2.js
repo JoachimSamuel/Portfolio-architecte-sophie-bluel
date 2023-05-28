@@ -86,4 +86,73 @@ function filterGalleryByCategory(categoryName) {
     });
 }
 
+// Mettre à jour la page d'accueil si le token est présent
+if(localStorage.getItem("token")) {
+    changeLogoutButton()
+    deleteFilters()
+    btnModifier()
+    btnModifier2()
+}
 
+//Changer BTN de d'éconexion
+function changeLogoutButton() {
+    const parent = document.querySelector('ul');
+    const log = parent.querySelector("#login");
+    const logout = document.createElement('li');
+    logout.id = 'logout';
+    logout.innerHTML = "Logout";
+    parent.replaceChild(logout, log);
+    logout.addEventListener("click", () => {
+      // Supprimer le token du stockage local et rediriger vers la page de connexion
+      localStorage.removeItem("token");
+      window.location.href = "./login.html";
+    });
+  }
+
+// Suprimer les filtres
+function deleteFilters(){
+    document.getElementById('filters').remove();
+    document.getElementById('projets').remove();
+}
+//BTN Modifier 
+function createModifierElement(className, textContent) {
+  const element = document.createElement('div');
+  element.className = className;
+  
+  const modifierLogo = document.createElement('i');
+  modifierLogo.className = 'fa-solid fa-pen-to-square';
+  
+  const modifier = document.createElement('p');
+  modifier.textContent = textContent;
+  modifier.className = 'figure-modifier';
+  
+  element.appendChild(modifier);
+  element.appendChild(modifierLogo);
+  
+  return element;
+}
+
+function btnModifier() {
+  const figure = document.querySelector('figure');
+  figure.id = 'figureContainer';
+  
+  const figureTexte = createModifierElement('figureTexte', 'Modifier');
+  
+  figure.appendChild(figureTexte);
+}
+
+function btnModifier2() {
+  const portfolio = document.querySelector('#portfolio');
+  const projetDiv = document.createElement('div');
+  projetDiv.classList.add('Projets');
+  
+  const modifierTetxe = createModifierElement('modifier-texte', 'Modifier');
+  
+  const title = document.createElement('h2');
+  title.textContent = 'Mes Projets';
+  
+  projetDiv.appendChild(title);
+  projetDiv.appendChild(modifierTetxe);
+  
+  portfolio.insertBefore(projetDiv, portfolio.querySelector('#gallery'));
+}

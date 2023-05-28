@@ -433,5 +433,4 @@ if(localStorage.getItem("token")) {
         modalTitle.textContent = "Ajout photo";
       })
     }); 
-  
 }
