@@ -13,7 +13,6 @@ function init() {
     .then(works => {
       console.log(works);
       displayGallery(works);
-      displayGalleryInModal(works);
     })
     .catch(error => {
       console.error('Une erreur s\'est produite lors de la récupération des œuvres :', error);
@@ -22,22 +21,30 @@ function init() {
 let works;
 // Affiche les images de la galerie
 function createImageElement(work, modal) {
+  const figure = document.createElement("figure");
+
+  const imgContainer = document.createElement("div");
+  
+
   const imgURL = document.createElement("img");
-  const title = document.createElement("figcaption");
   imgURL.src = work.imageUrl;
   imgURL.setAttribute("data-category", work.category.name);
-  title.innerText = work.title;
+  imgContainer.appendChild(imgURL);
 
-  const figure = document.createElement("figure");
-  figure.appendChild(imgURL);
+  const title = document.createElement("figcaption");
+  title.innerText = work.title;
+  figure.appendChild(imgContainer);
   figure.appendChild(title);
 
-  if(modal) {
-    modal.appendChild(figure);
+  if (modal) {
+    const modalTrash = createModalTrashImage(work.id);
+    imgContainer.appendChild(modalTrash);
+    imgContainer.classList.add("image-container");
   }
 
   return figure;
 }
+
 
 function displayGallery(works) {
   const gallery = document.querySelector('.gallery');
@@ -194,20 +201,7 @@ function btnModifier2(token) {
 }
 
 //Modale
-function displayGalleryInModal(works) {
-  const modalGallery = document.querySelector('#modalStep1');
-  if (!modalGallery) {
-    console.error('L\'élément avec l\'ID "modalStep1" n\'existe pas.');
-    return;
-  }
 
-  modalGallery.innerHTML = "";
-
-  works.forEach(work => {
-    const figure = createImageElement(work, modalGallery);
-    modalGallery.appendChild(figure);
-  });
-}
 
 
 function createModalOverlay() {
@@ -225,7 +219,8 @@ function createModal(step, works) {
 
   const modalOverlay = createModalOverlay();
   const modalContent = createModalContent(step, modalOverlay, works);
-
+  const modalOpen = false;
+  
   modalOverlay.appendChild(modalContent);
   modalContainer.appendChild(modalOverlay);
 
@@ -234,30 +229,29 @@ function createModal(step, works) {
 }
 
 
-function createModalContent(step, modalOverlay, works) {
+function createModalContent(step, modalOverlay, works, modalOpen) {
   const modalContent = document.createElement('div');
   modalContent.classList.add('modal-content');
+  
 
   if (step === 1) {
     const modalTitle = ModalTitle();
+    const modalGallery = createModalGallery(works);
     const modalCloseButton = ModalCloseButton(modalOverlay);
     const btnAjouterUnePhoto = ModalButton('Ajouter une photo', 'btn-ajouter', 'btnAjouterUnePhoto');
     const supprimerLaGallery = ModalParagraph('Supprimer la galerie', 'modal-btn-suprimer', 'modalBtnSuprimer');
 
-    const modalStep1 = document.createElement("div");
-    modalStep1.id ="modalStep1";
-
     modalContent.appendChild(modalTitle);
+    modalContent.appendChild(modalGallery);
     modalContent.appendChild(btnAjouterUnePhoto);
     modalContent.appendChild(supprimerLaGallery);
-    modalContent.appendChild(modalStep1);
     modalContent.appendChild(modalCloseButton);
 
     // Écouteur d'événement pour le bouton "Ajouter une photo"
     btnAjouterUnePhoto.addEventListener('click', () => {
       console.log('btn ajouter une photo cliqué');
     });
-   
+
     // Affiche la galerie existante lorsque la modale est ouverte
     modalOverlay.addEventListener('click', () => {
       modalContent.classList.add('show-gallery');
@@ -269,8 +263,24 @@ function createModalContent(step, modalOverlay, works) {
       modalContent.classList.remove('show-gallery');
     });
   }
+
   return modalContent;
 }
+
+function createModalGallery(works) {
+  const modalGallery = document.createElement('div');
+  modalGallery.id = 'modalStep1';
+  modalGallery.classList.add('modal-gallery');
+  
+  
+  works.forEach(work => {
+    const figure = createImageElement(work, true);
+    modalGallery.appendChild(figure);
+  });
+
+  return modalGallery;
+}
+
 
 
 function ModalTitle() {
@@ -305,6 +315,78 @@ function ModalParagraph(text, className, id) {
   paragraph.id = id;
   return paragraph;
 }
+
+function displayGalleryInModal(works) {
+  const modalGallery = document.querySelector('#modalStep1');
+  if (!modalGallery) {
+    console.error('L\'élément avec l\'ID "modalStep1" n\'existe pas.');
+    return;
+  }
+
+  modalGallery.innerHTML = "";
+
+  works.forEach(work => {
+    const figure = createImageElement(work, modalGallery);
+    const titleElement = figure.querySelector('figcaption');
+    titleElement.innerText = "éditer";
+
+    modalGallery.appendChild(figure);
+
+    const modalTrash = createModalTrashImage(work.id); // Passer l'ID de l'œuvre ici
+    figure.querySelector('.image-container').appendChild(modalTrash);
+    modalGallery.appendChild(figure);
+  });
+}
+
+function createModalTrashImage(workId) {
+  const modalTrash = document.createElement('span');
+  modalTrash.classList = 'fa-solid fa-trash';
+  modalTrash.id = 'modalTrash';
+
+  modalTrash.addEventListener('click', async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const myHeaders = new Headers();
+      myHeaders.append('Authorization', `Bearer ${token}`);
+
+      const deleteResponse = await fetch(`http://localhost:5678/api/works/${workId}`, {
+        method: 'DELETE',
+        headers: myHeaders
+      });
+
+      if (deleteResponse.ok) {
+        // Suppression réussie, effectuez les actions nécessaires (par exemple, supprimez l'élément du DOM)
+        console.log('Le travail a été supprimé avec succès.');
+        refreshGallery(true);
+      } else {
+        console.error('Une erreur s\'est produite lors de la suppression du travail.');
+      }
+    } catch (error) {
+      console.error('Une erreur s\'est produite lors de la suppression du travail :', error);
+    }
+  });
+
+  return modalTrash;
+}
+
+function refreshGallery(modalOpen) {
+  getWorks()
+    .then(works => {
+      displayGallery(works); // Mettre à jour la galerie principale
+
+      if (modalOpen) {
+        displayGalleryInModal(works); // Mettre à jour la galerie dans la modale seulement si elle est ouverte
+      }
+    })
+    .catch(error => {
+      console.error('Une erreur s\'est produite lors de la récupération des œuvres :', error);
+    });
+}
+
+
+
+
+
 
 
 //Modal Ajout Photo
