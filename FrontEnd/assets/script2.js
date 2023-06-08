@@ -202,12 +202,41 @@ function btnModifier2(token) {
 
 //Modale
 
-
-
 function createModalOverlay() {
   const modalOverlay = document.createElement('div');
   modalOverlay.classList.add('modal-overlay');
   return modalOverlay;
+}
+
+
+function createModalContent(step, modalOverlay, works) {
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('modal-content');
+
+  const modalCloseButton = ModalCloseButton(modalOverlay);
+
+  modalContent.appendChild(modalCloseButton);
+
+  if (step === 1) {
+    buildStep1Content(modalContent, works);
+  } else if (step === 2) {
+    buildStep2Content(modalContent);
+  }
+
+  return modalContent;
+}
+
+function toggleGallery(modalContent, works) {
+  const modalContainer = document.querySelector('.modal-content');
+  modalContainer.innerHTML = '';
+
+  const step = modalContent.classList.contains('step1') ? 2 : 1;
+
+  if (step === 1) {
+    buildStep1Content(modalContainer, works);
+  } else if (step === 2) {
+    buildStep2Content(modalContainer);
+  }
 }
 
 function createModal(step, works) {
@@ -219,53 +248,244 @@ function createModal(step, works) {
 
   const modalOverlay = createModalOverlay();
   const modalContent = createModalContent(step, modalOverlay, works);
-  const modalOpen = false;
-  
+
+  modalOverlay.addEventListener('click', toggleGallery);
+
+
   modalOverlay.appendChild(modalContent);
   modalContainer.appendChild(modalOverlay);
 
   modalContent.classList.add('show-gallery');
   displayGalleryInModal(works);
+
+  const btnAjouterUnePhoto = document.getElementById('btnAjouterUnePhoto');
+  btnAjouterUnePhoto.addEventListener('click', toggleGallery);
 }
 
 
-function createModalContent(step, modalOverlay, works, modalOpen) {
-  const modalContent = document.createElement('div');
-  modalContent.classList.add('modal-content');
+
+
+
+function buildStep1Content(modalContent, works) {
+  const modalTitle = ModalTitle();
+  const modalGallery = createModalGallery(works);
+  modalGallery.id = 'modalGallery'; // Ajoutez l'ID "modalGallery" à l'élément
+  const btnAjouterUnePhoto = ModalButton('Ajouter une photo', 'btn-ajouter', 'btnAjouterUnePhoto');
+  const supprimerLaGallery = ModalParagraph('Supprimer la galerie', 'modal-btn-suprimer', 'modalBtnSuprimer');
+
+  modalContent.appendChild(modalTitle);
+  modalContent.appendChild(modalGallery);
+  modalContent.appendChild(btnAjouterUnePhoto);
+  modalContent.appendChild(supprimerLaGallery);
+
+  btnAjouterUnePhoto.addEventListener('click', () => {
+   // Supprime la modale existante
+      createModal(2, works); // Crée une nouvelle modale avec l'étape 2 après un court délai
+    console.log("Btn Ajouter une photo cliqué !");
+  });
+}
+
+function removeModal() {
+  const modalOverlay = document.querySelector('.modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.remove();
+  }
+}
+function buildStep2Content(modalContent, works) {
+  modalContent.innerHTML = '';
+  const modalReturnButton = document.createElement('button');
+  modalReturnButton.classList = 'fa-solid fa-arrow-left modal-return';
+  modalReturnButton.addEventListener('click', () => {
+    toggleGallery(1, modalContent, works); // Revenir à l'étape 1
+  });
+
+  const modalForm = createModalForm();
+  modalContent.appendChild(modalReturnButton);
+  modalContent.appendChild(modalForm);
+}
+
+function createModalForm() {
+  const modalForm = document.createElement('form');
+  modalForm.id = 'ajouterFormulaire';
+  modalForm.classList.add('ajout');
+
+  const divAjoutImg = createDivAjoutImg();
+  const divInput = createDivInput();
+
+  const inputElement = document.querySelector('.ajouter-input-input');
+  const selectCategory = document.querySelector('.ajouter-input-input');
   
+  const btnValider = createBtnValider(inputElement, selectCategory); 
 
-  if (step === 1) {
-    const modalTitle = ModalTitle();
-    const modalGallery = createModalGallery(works);
-    const modalCloseButton = ModalCloseButton(modalOverlay);
-    const btnAjouterUnePhoto = ModalButton('Ajouter une photo', 'btn-ajouter', 'btnAjouterUnePhoto');
-    const supprimerLaGallery = ModalParagraph('Supprimer la galerie', 'modal-btn-suprimer', 'modalBtnSuprimer');
+  modalForm.appendChild(divAjoutImg);
+  modalForm.appendChild(divInput);
+  modalForm.appendChild(btnValider);
 
-    modalContent.appendChild(modalTitle);
-    modalContent.appendChild(modalGallery);
-    modalContent.appendChild(btnAjouterUnePhoto);
-    modalContent.appendChild(supprimerLaGallery);
-    modalContent.appendChild(modalCloseButton);
+  modalForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+  });
 
-    // Écouteur d'événement pour le bouton "Ajouter une photo"
-    btnAjouterUnePhoto.addEventListener('click', () => {
-      console.log('btn ajouter une photo cliqué');
-    });
+  return modalForm;
+}
 
-    // Affiche la galerie existante lorsque la modale est ouverte
-    modalOverlay.addEventListener('click', () => {
-      modalContent.classList.add('show-gallery');
-      displayGalleryInModal(works);
-    });
+function createDivAjoutImg() {
+  const divAjoutImg = document.createElement('div');
+  divAjoutImg.classList = 'ajouter-image';
 
-    // Cache la galerie lorsque la modale est fermée
-    modalCloseButton.addEventListener('click', () => {
-      modalContent.classList.remove('show-gallery');
-    });
+  const logoAjoutImg = document.createElement('i');
+  logoAjoutImg.classList = 'fa-solid fa-image';
+
+  const btnAjouterImg = document.createElement('input');
+  btnAjouterImg.type = 'file';
+  btnAjouterImg.classList.add('ajouter-btn');
+  btnAjouterImg.textContent = '+ Ajouter photo';
+
+  const texteAjoutImg = document.createElement('p');
+  texteAjoutImg.classList.add('ajouter-text');
+  texteAjoutImg.textContent = 'jpg, png : 4mo max';
+
+  btnAjouterImg.addEventListener('change', (event) => {
+    const fichier = event.target.files[0];
+    const url = URL.createObjectURL(fichier);
+    const img = document.createElement('img');
+    img.src = url;
+
+    divAjoutImg.appendChild(img);
+  });
+
+  divAjoutImg.appendChild(logoAjoutImg);
+  divAjoutImg.appendChild(btnAjouterImg);
+  divAjoutImg.appendChild(texteAjoutImg);
+
+  return divAjoutImg;
+}
+function createDivInput() {
+  const divInput = document.createElement('div');
+  divInput.classList = 'ajouter-input';
+
+  const divInputTitle = document.createElement('div');
+  divInputTitle.classList = 'ajouter-input-div';
+
+  const inputTitle = document.createElement('p');
+  inputTitle.classList = 'ajouter-input-title';
+  inputTitle.textContent = 'Titre';
+
+  const inputElement = document.createElement('input');
+  inputElement.classList = 'ajouter-input-input titre';
+
+  divInputTitle.appendChild(inputTitle);
+  divInputTitle.appendChild(inputElement);
+
+  const divInputCategory = document.createElement('div');
+  divInputCategory.classList = 'ajouter-input-div';
+
+  const selectCategory = document.createElement('select');
+  selectCategory.classList = 'ajouter-input-input select';
+
+  const inputCategoryTitle = document.createElement('p');
+  inputCategoryTitle.classList = 'ajouter-input-title';
+  inputCategoryTitle.textContent = 'Catégorie';
+
+  const option1 = document.createElement('option');
+  option1.id = '1';
+  option1.textContent = 'Objets';
+
+  const option2 = document.createElement('option');
+  option2.id = '2';
+  option2.textContent = 'Appartements';
+
+  const option3 = document.createElement('option');
+  option3.id = '3';
+  option3.textContent = 'Hôtel & restaurants';
+
+  selectCategory.appendChild(option1);
+  selectCategory.appendChild(option2);
+  selectCategory.appendChild(option3);
+
+  divInputCategory.appendChild(inputCategoryTitle);
+  divInputCategory.appendChild(selectCategory);
+
+  divInput.appendChild(divInputTitle);
+  divInput.appendChild(divInputCategory);
+
+  return divInput;
+}
+
+
+function getFormData() {
+  const inputElement = document.querySelector('.ajouter-input-input.titre');
+  const selectElement = document.querySelector('.ajouter-input-input.select');
+
+  const title = inputElement.value;
+  const category = selectElement.options[selectElement.selectedIndex].id;
+
+  return { title, category };
+}
+
+function getImageData() {
+  const imgFile = document.querySelector('input[type=file]').files[0];
+  return imgFile;
+}
+
+function createBtnValider() {
+  const btnValider = document.createElement('button');
+  btnValider.classList.add('ajouter-btn-valider');
+  btnValider.textContent = 'Valider';
+
+  btnValider.addEventListener('click', () => {
+    handleValidation();
+  });
+
+  return btnValider;
+}
+
+async function handleValidation() {
+  const token = localStorage.getItem('token');
+  const formData = getFormData();
+  const imgFile = getImageData();
+
+  if (!formData.title || !formData.category || !imgFile) {
+    const defMessage = document.createElement('div');
+    defMessage.classList.add('def-message');
+    defMessage.textContent = 'Erreur : Champ manquant';
+    document.body.appendChild(defMessage);
+    return;
   }
 
-  return modalContent;
+  formData.image = imgFile;
+
+  const formBody = new FormData();
+  formBody.append('title', formData.title);
+  formBody.append('category', formData.category);
+  formBody.append('image', formData.image);
+
+  try {
+    const response = await fetch('http://localhost:5678/api/works', {
+      method: 'POST',
+      body: formBody,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log('Data received from API:', data);
+
+    if (response.ok) {
+      toggleGallery(1, modalContent, works);
+      refreshGallery(true);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
+
+
+
 
 function createModalGallery(works) {
   const modalGallery = document.createElement('div');
@@ -317,11 +537,6 @@ function ModalParagraph(text, className, id) {
 }
 
 function displayGalleryInModal(works) {
-  const modalGallery = document.querySelector('#modalStep1');
-  if (!modalGallery) {
-    console.error('L\'élément avec l\'ID "modalStep1" n\'existe pas.');
-    return;
-  }
 
   modalGallery.innerHTML = "";
 
@@ -383,50 +598,3 @@ function refreshGallery(modalOpen) {
     });
 }
 
-
-
-
-
-
-
-//Modal Ajout Photo
-const btnAjouterUnePhoto = document.getElementById('btnAjouterUnePhoto');
-
-//function openModalAjoutPhoto() {
- // modalForm();
-  //arrowReturn();
-  //deleteModalGaleriePhoto();
-//}
-
-//btnAjouterUnePhoto.addEventListener('click', () => {
- // openModalAjoutPhoto();
-  //console.log('btn ajouter une photo cliqué');
-//});
-
-//openModalAjoutPhoto();
-//console.log(btnAjouterUnePhoto);
-
-//function modalForm() {
-  //modalInputTitre();
-  //modalInputCategorie();
-  //btnValiderForm();
-//}
-//function modalInputTitre() {
-
-//}
-//function modalInputCategorie() {
-
-//}
-
-//function btnValiderForm() {
-
-//}
-
-//function arrowReturn() {
-
-//}
-
-//function deleteModalGaleriePhoto() {
-  //document.getElementById('modalBtnSuprimer').remove();
-  //document.getElementById('btnAjouterUnePhoto').remove();
-//}

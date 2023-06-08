@@ -150,7 +150,7 @@ if(localStorage.getItem("token")) {
     portfolio.insertBefore(projetDiv, portfolio.querySelector('#gallery'));
 
     //Modal Gallerie Photo
-//sortir la fucntion du if et appeler 
+ //sortir la fucntion du if et appeler 
     function createGallery(works) {
       const gallery = document.createElement('div');
       works.forEach(data => {
@@ -193,7 +193,6 @@ if(localStorage.getItem("token")) {
   
       const modalImageContainer = document.createElement('div');
       modalImageContainer.classList.add('modal-image-container');
-      modalImageContainer.id = "modalImageContainer";
 
       // Ajouter les images à la div modal-image-container
         
