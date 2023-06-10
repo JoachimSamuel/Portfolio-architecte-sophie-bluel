@@ -608,133 +608,103 @@ function btnModifier2(token) {
 
 //************** Nouvelle Modal *********************/
 
-/**
- * Crée l'élément du fond de la modale
- * @returns {HTMLElement} L'élément du fond de la modale
- */
+// Crée l'élément du fond de la modale
 function createModalOverlay() {
   const modalOverlay = document.createElement('div');
   modalOverlay.classList.add('modal-overlay');
   return modalOverlay;
 }
 
-/**
- * Crée l'élément du contenu de la modale
- * @returns {HTMLElement} L'élément du contenu de la modale
- */
+// Crée l'élément du contenu de la modale
 function createModalContent() {
   const modalContent = document.createElement('div');
   modalContent.classList.add('modal-content');
   return modalContent;
 }
 
-/**
- * Affiche un contenu dans la modale de la page
- * @param {HTMLElement} content 
- * @returns void
- */
+// Affiche un contenu dans la modale de la page
 function displayInModal(content) {
-  const modalOverlay = createModalOverlay();
-  const modalContent = createModalContent();
+  const modalOverlay = document.querySelector('.modal-overlay');
 
-  if (content) {
+  // Vérifie si la modale existe déjà
+  if (!modalOverlay) {
+    const newModalOverlay = createModalOverlay();
+    const newModalContent = createModalContent();
+
+    newModalContent.appendChild(content);
+    newModalOverlay.appendChild(newModalContent);
+    document.body.appendChild(newModalOverlay);
+  } else {
+    const modalContent = modalOverlay.querySelector('.modal-content');
     modalContent.innerHTML = '';
     modalContent.appendChild(content);
   }
-
-  modalOverlay.appendChild(modalContent);
-  document.body.appendChild(modalOverlay);
 }
 
-
-
-
+// Affiche le gestionnaire de galerie dans la modale
 function displayWorksManagerInModal() {
   const worksManager = document.createElement('div');
 
   const title = document.createElement('h3');
-  title.textContent = "Gallerie Photo"
+  title.textContent = "Gallerie Photo";
 
   const closeButton = document.createElement('span');
   closeButton.textContent = "X";
-  closeButton.addEventListener('click', () => closeModal);
-
-  //const gallery = creatGalleryInModal();
+  closeButton.addEventListener('click', closeModal);
 
   const addWorkBtn = document.createElement('button');
   addWorkBtn.textContent = "Ajouter une photo";
-  addWorkBtn.addEventListener('click', () => {
-    displayFormInModal();
-    console.log("Formulaire affiché dans la modale");
-  });
-  
+  addWorkBtn.addEventListener('click', displayFormInModal);
 
   const deleteGallery = document.createElement('button');
   deleteGallery.textContent = "Supprimer la galerie";
 
   worksManager.appendChild(closeButton);
   worksManager.appendChild(title);
-  //worksManager.appendChild(gallery);
   worksManager.appendChild(addWorkBtn);
   worksManager.appendChild(deleteGallery);
 
   displayInModal(worksManager);
 }
 
-
-
-
-
-
-
-
-/**
- * Créé le formulaire d'ajout pour un Work
- * @returns {HTMLElement} Le formulaire pour ajouter un Work
- */
+// Crée le formulaire d'ajout pour un Work
 function createWorkForm() {
-  const form = document.createElement(form)
-  const titleLabel = document.createElement(label)
-  const titleInput = document.createElement(input)
+  const closeButton = document.createElement('span');
+  closeButton.textContent = "X";
+  closeButton.addEventListener('click', closeModal);
 
-  const categoryLabel = document.createElement(label)
-  const categoryInput = document.createElement(input)
+  const arrowLeft = '\u2190';
+  const modalReturnButton = document.createElement('span');
+  modalReturnButton.textContent = arrowLeft;
+  modalReturnButton.addEventListener('click', displayWorksManagerInModal);
+  
+  const form = document.createElement('form');
+  const titleLabel = document.createElement('label');
+  const titleInput = document.createElement('input');
 
-  form.appendChild(titleLabel)    
-  form.appendChild(titleInput)    
-  form.appendChild(categoryLabel)    
-  form.appendChild(categoryInput)    
-  return form
+  const categoryLabel = document.createElement('label');
+  const categoryInput = document.createElement('input');
+
+  form.appendChild(closeButton);
+  form.appendChild(modalReturnButton);
+  form.appendChild(titleLabel);
+  form.appendChild(titleInput);
+  form.appendChild(categoryLabel);
+  form.appendChild(categoryInput);
+  return form;
 }
 
-/**
- * Créé le formulaire d'ajout pour un Work
- * @returns {HTMLElement} Le formulaire pour ajouter un Work
- */
-function createWorkForm() {
-  const form = document.createElement(form)
-  const titleLabel = document.createElement(label)
-  const titleInput = document.createElement(input)
-
-  const categoryLabel = document.createElement(label)
-  const categoryInput = document.createElement(input)
-
-  form.appendChild(titleLabel)    
-  form.appendChild(titleInput)    
-  form.appendChild(categoryLabel)    
-  form.appendChild(categoryInput)    
-  return form
-}
-
-/**
- * Affiche le formulaire d'ajout dans la modale de la page
- */
+// Affiche le formulaire d'ajout dans la modale de la page
 function displayFormInModal() {
-  const form = createWorkForm()
-  displayInModal(form)
+  const form = createWorkForm();
+  displayInModal(form);
 }
 
-
-function closeModal(){
-
+// Ferme la modale
+function closeModal() {
+  const modalOverlay = document.querySelector('.modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.remove();
+  }
 }
+
