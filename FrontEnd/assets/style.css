@@ -434,6 +434,8 @@ h3{
 .modifier-texte{
 	display: flex;
 	gap: 0.1rem;
+	align-items: flex-end;
+    flex-direction: row-reverse;
 }
 
 /*Ajout photo*/
