@@ -88,6 +88,13 @@ function filterGalleryByCategory(categoryName) {
   });
 }
 
+function getToken() {
+  // Code pour récupérer le token à partir de la variable ou du mécanisme de stockage approprié
+  const token = localStorage.getItem('token'); // Exemple d'utilisation du Local Storage
+
+  return token;
+}
+
 // Mettre à jour la page d'accueil si le token est présent
 if(localStorage.getItem("token")) {
   changeLogoutButton();
@@ -669,30 +676,205 @@ function displayWorksManagerInModal() {
 
 // Crée le formulaire d'ajout pour un Work
 function createWorkForm() {
-  const closeButton = document.createElement('span');
-  closeButton.textContent = "X";
-  closeButton.addEventListener('click', closeModal);
+  // Création des éléments de fermeture et de retour
+  const closeButton = createButton('X', closeModal);
+  const modalReturnButton = createButton('\u2190', displayWorksManagerInModal);
 
-  const arrowLeft = '\u2190';
-  const modalReturnButton = document.createElement('span');
-  modalReturnButton.textContent = arrowLeft;
-  modalReturnButton.addEventListener('click', displayWorksManagerInModal);
-  
+  // Création du formulaire
   const form = document.createElement('form');
-  const titleLabel = document.createElement('label');
-  const titleInput = document.createElement('input');
 
-  const categoryLabel = document.createElement('label');
-  const categoryInput = document.createElement('input');
+  // Création des champs de saisie de texte
+  const titleInput = createTextInput('Titre');
+  const categoryInput = createCategoryInput();
 
-  form.appendChild(closeButton);
-  form.appendChild(modalReturnButton);
-  form.appendChild(titleLabel);
-  form.appendChild(titleInput);
-  form.appendChild(categoryLabel);
-  form.appendChild(categoryInput);
+  // Création de l'élément pour afficher l'image sélectionnée
+  const imagePreview = document.createElement('img');
+  imagePreview.style.display = 'none';
+
+  // Création du champ de téléchargement de fichier
+  const fileInput = createFileInput(imagePreview);
+
+  // Création du bouton de validation
+  const submitButton = createButton('Valider', handleSubmit);
+
+  // Ajout des éléments au formulaire
+  form.append(
+    closeButton,
+    modalReturnButton,
+    titleInput.label,
+    titleInput.input,
+    categoryInput.label,
+    categoryInput.select,
+    fileInput.label,
+    fileInput.input,
+    imagePreview,
+    submitButton
+  );
+
   return form;
 }
+
+
+// Fonction utilitaire pour créer un bouton avec un texte et un gestionnaire d'événements
+function createButton(text, clickHandler) {
+  const button = document.createElement('span');
+  button.textContent = text;
+  button.addEventListener('click', clickHandler);
+  return button;
+}
+
+// Fonction utilitaire pour créer un champ de saisie de texte avec une étiquette
+function createTextInput(labelText) {
+  const label = document.createElement('label');
+  const input = document.createElement('input');
+  input.type = 'text';
+  label.textContent = labelText;
+  label.appendChild(input);
+  return { label, input };
+}
+
+// Fonction utilitaire pour créer un champ de saisie de catégorie avec une étiquette
+function createCategoryInput() {
+  const label = document.createElement('label');
+  label.textContent = 'Catégorie';
+  const select = document.createElement('select');
+  select.name = 'category';
+
+  // Création des options avec les identifiants correspondants
+  const options = [
+    { id: '1', text: 'Objet' },
+    { id: '2', text: 'Hébergement' },
+    { id: '3', text: 'Hôtel et Restaurant' }
+  ];
+
+  options.forEach(option => {
+    const optionElement = document.createElement('option');
+    optionElement.value = option.id;
+    optionElement.textContent = option.text;
+    select.appendChild(optionElement);
+  });
+
+  label.appendChild(select);
+  return { label, select };
+}
+
+// Fonction utilitaire pour créer un champ de téléchargement de fichier avec une étiquette
+function createFileInput(imagePreview) {
+  const label = document.createElement('label');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/jpeg, image/png';
+  input.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.src = '';
+      imagePreview.style.display = 'none';
+    }
+  });
+  label.textContent = 'Fichier (JPEG ou PNG, max. 4 Mo)';
+  label.appendChild(input);
+  return { label, input };
+}
+
+// Gestionnaire d'événements pour le changement de fichier
+function handleFileChange(event) {
+  const fileInput = event.target;
+  const files = fileInput.files;
+  const maxFileSize = 4 * 1024 * 1024; // 4 Mo (en octets)
+
+  if (files.length > 0) {
+    const file = files[0];
+    if (file.size > maxFileSize) {
+      alert('Le fichier dépasse la taille maximale autorisée de 4 Mo.');
+      fileInput.value = ''; // Réinitialise le champ de fichier
+    }
+  }
+}
+
+// Fonction utilitaire pour créer un bouton avec un texte et un gestionnaire d'événements
+function createButton(text, clickHandler) {
+  const button = document.createElement('button');
+  button.textContent = text;
+  button.addEventListener('click', clickHandler);
+  return button;
+}
+
+// Gestionnaire d'événements pour la validation du formulaire
+function handleSubmit(event) {
+  event.preventDefault(); // Empêche l'envoi du formulaire
+
+  const form = event.target.form;
+  const inputs = form.querySelectorAll('input[type="text"], select');
+  let allFieldsFilled = true;
+  let formData = {}; // Objet pour stocker les données du formulaire
+
+  inputs.forEach(input => {
+    if (!input.value) {
+      allFieldsFilled = false;
+      input.classList.add('invalid');
+    } else {
+      input.classList.remove('invalid');
+      formData[input.name] = input.value; // Stocke la valeur du champ dans l'objet formData
+    }
+  });
+
+  if (allFieldsFilled) {
+    event.target.classList.add('success');
+    // Utilisez l'objet formData comme vous le souhaitez
+    const { title, category, image } = formData;
+    console.log('Titre:', title);
+    console.log('ID de catégorie:', category);
+    console.log('Image:', image);
+
+    // Appel de la fonction pour envoyer la requête POST vers l'API
+    sendFormData(formData);
+  } else {
+    event.target.classList.remove('success');
+  }
+}
+// Fonction pour envoyer la requête POST vers l'API avec les données du formulaire
+function sendFormData(formData, token) {
+ // const token = getToken();
+  //if (token) {
+    // Création de l'objet FormData pour envoyer les données du formulaire
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('imageUrl', formData.image);
+    formDataToSend.append('categoryId', formData.category);
+
+    // Envoi de la requête POST vers l'API
+    fetch('http://localhost:5678/api/works', {
+      method: 'POST',
+      body: formDataToSend,
+      headers: {
+        Authorization: `Bearer ${token}` // Ajoute l'en-tête d'autorisation avec le token
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Réponse de l\'API:', data);
+        if (data.success) {
+          displayWorksManagerInModal();
+        } else {
+          // Gérer la réponse en cas d'échec de l'API
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la requête POST:', error);
+        // Gérer les erreurs ici
+      });
+  //}
+}
+
+
+
 
 // Affiche le formulaire d'ajout dans la modale de la page
 function displayFormInModal() {
