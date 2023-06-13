@@ -13,6 +13,7 @@ function init() {
     .then(works => {
       console.log(works);
       displayGallery(works);
+     
     })
     .catch(error => {
       console.error('Une erreur s\'est produite lors de la récupération des œuvres :', error);
@@ -20,7 +21,7 @@ function init() {
 }
 let works;
 // Affiche les images de la galerie
-function createImageElement(work, modal) {
+function createImageElement(work) {
   const figure = document.createElement("figure");
 
   const imgContainer = document.createElement("div");
@@ -35,12 +36,6 @@ function createImageElement(work, modal) {
   title.innerText = work.title;
   figure.appendChild(imgContainer);
   figure.appendChild(title);
-
-  if (modal) {
-    const modalTrash = createModalTrashImage(work.id);
-    imgContainer.appendChild(modalTrash);
-    imgContainer.classList.add("image-container");
-  }
 
   return figure;
 }
@@ -183,7 +178,8 @@ function btnModifier2(token) {
     projetDiv.appendChild(modifierTexte);
 
     modifierTexte.addEventListener('click', function(){
-      displayWorksManagerInModal();
+      openModal();
+      displayWorksManagerInModal(works);
       console.log("bnt modifié cliqué !")
     })    
 
@@ -615,6 +611,13 @@ function btnModifier2(token) {
 
 //************** Nouvelle Modal *********************/
 
+function openModal() {
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('modal-content');
+
+  displayInModal(modalContent);
+}
+
 // Crée l'élément du fond de la modale
 function createModalOverlay() {
   const modalOverlay = document.createElement('div');
@@ -648,12 +651,13 @@ function displayInModal(content) {
   }
 }
 
+
 // Affiche le gestionnaire de galerie dans la modale
-function displayWorksManagerInModal() {
+async function displayWorksManagerInModal(works) {
   const worksManager = document.createElement('div');
 
   const title = document.createElement('h3');
-  title.textContent = "Gallerie Photo";
+  title.textContent = "Galerie Photo";
 
   const closeButton = document.createElement('span');
   closeButton.textContent = "X";
@@ -666,13 +670,107 @@ function displayWorksManagerInModal() {
   const deleteGallery = document.createElement('button');
   deleteGallery.textContent = "Supprimer la galerie";
 
+  const gallery = await createGalleryInModal(); 
+
   worksManager.appendChild(closeButton);
   worksManager.appendChild(title);
+  worksManager.appendChild(gallery);
   worksManager.appendChild(addWorkBtn);
   worksManager.appendChild(deleteGallery);
 
   displayInModal(worksManager);
 }
+
+/**
+ * Crée une card pour un Work destiné à être affiché
+ * @param {Object} Représente un Work récupéré de l'API
+ * @returns {HTMLElement} Une carte représentant le Work
+ */
+function createWorkCard(work) {
+  const workCard = document.createElement('div');
+  workCard.classList.add('work-card');
+
+  const imageContainer = document.createElement('div');
+  imageContainer.classList.add('image-container');
+
+  const img = document.createElement('img');
+  img.setAttribute('src', work.imageUrl);
+
+  const editButton = document.createElement('button');
+  editButton.textContent = 'Éditer';
+
+  const trashButton = document.createElement('button');
+  trashButton.classList.add('trash');
+  trashButton.addEventListener('click', () => deleteWork(work));
+
+  imageContainer.appendChild(img);
+  imageContainer.appendChild(trashButton);
+  workCard.appendChild(imageContainer);
+  workCard.appendChild(editButton);
+  
+
+  return workCard;
+}
+
+
+
+async function createGalleryInModal() {
+  const gallery = document.createElement('div');
+  gallery.classList.add('gallery_modal');
+  
+  const works = await getWorks(); // Remplace fetchwork() par fetchWorks() pour récupérer les travaux depuis l'API
+  
+  works.forEach(work => {
+    const workDom = createWorkCard(work);
+    gallery.appendChild(workDom);
+  });
+
+  return gallery;
+}
+
+async function deleteWork(workId) {
+  try {
+    console.log("work ID :", workId);
+    const token = localStorage.getItem('token');
+    const myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${token}`);
+
+    const deleteResponse = await fetch(`http://localhost:5678/api/works/${workId.id}`, {
+      method: 'DELETE',
+      headers: myHeaders
+    });
+
+    if (deleteResponse.ok) {
+      // Suppression réussie, effectuez les actions nécessaires (par exemple, supprimez l'élément du DOM)
+      console.log('Le travail a été supprimé avec succès.');
+      refreshGallery(true);
+    } else {
+      console.error('Une erreur s\'est produite lors de la suppression du travail.');
+    }
+  } catch (error) {
+    console.error('Une erreur s\'est produite lors de la suppression du travail :', error);
+  }
+}
+
+async function refreshGallery() {
+  try {
+    // Recharge tous les travaux depuis l'API
+    works = await getWorks();
+
+    // Met à jour la galerie principale
+    displayGallery(works);
+
+    // Met à jour la galerie de la modal
+    const galleryModal = document.querySelector('.gallery_modal');
+    galleryModal.innerHTML = "";
+    const galleryInModal = await createGalleryInModal();
+    galleryModal.appendChild(galleryInModal);
+  } catch (error) {
+    console.error('Une erreur s\'est produite lors du rafraîchissement de la galerie :', error);
+  }
+}
+
+
 
 // Crée le formulaire d'ajout pour un Work
 function createWorkForm() {
@@ -889,4 +987,3 @@ function closeModal() {
     modalOverlay.remove();
   }
 }
-
