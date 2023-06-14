@@ -322,7 +322,6 @@ h3{
 	flex-direction: column;
 	position: absolute;
 	align-items: center;
-	width: 25%;
 
 	top: 50%;
 	left: 50%;
@@ -337,7 +336,7 @@ h3{
 	text-align: center;
 	margin-bottom: 2rem;
 }
-#modalGallery{
+.gallery_modal{
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
@@ -353,22 +352,26 @@ h3{
 	margin: 0.5rem;	
 }
 
-#modalTrash{
+.trash{
 	position: absolute;
 	font-size: 1rem;
 	color: white;
-
+	right:5px;
+	top:5px;
 	background-color: black;
-	border: 3px solid black;
-	top:10px;
-	right: 10px;
+	border: 2px solid black;
 	z-index: 1;
 }
-#modalTrash:hover{
+.trash:hover{
 	cursor: pointer;
 	color: #B1663C;
 }
-.btn-ajouter{
+.work-card button{
+	border: none;
+	padding: 4px;
+}
+
+.modal-btn-ajouter{
 	border-radius: 60px;
 	background-color: #1D6154;
 	border-color: #1D6154;
@@ -384,12 +387,12 @@ h3{
 	font-size: 16px;
 	line-height: 19.2px;
 }
-.btn-ajouter:hover{
+.modal-btn-ajouter:hover{
 	background-color: transparent;
 	color: #1D6154;
 	cursor: pointer;
 }
-.modal-close {
+.modal-close-btn {
 	position: absolute;
 	top: 10px;
 	right: 10px;
@@ -398,18 +401,26 @@ h3{
 	font-size: 20px;
 	cursor: pointer;
 }
-.modal-close:hover {
+
+.delet-ADD{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.modal-close-btn:hover {
 	color: #B1663C;
 }
-.modal-btn-suprimer{
+.modal-btn-delete{
 	top: 10px;
 	right: 20px;
 	cursor: pointer;	
 	font-size: 1rem;
+	border: none;
 }
-.modal-btn-suprimer:hover{
+.modal-btn-delete:hover{
 	color: #B1663C;
 }
+
 
 /*Modal Ajout photo*/
 .modal-return {
@@ -439,35 +450,51 @@ h3{
 }
 
 /*Ajout photo*/
-#ajouterFormulaire{
+form{
 	align-items: center;
     display: flex;
     flex-direction: column;
 }
-.ajouter-image{
+.form-container{
+	display: flex;
+	flex-direction: column;
+	border-radius: 3px;
+	margin-bottom: 2rem;
+	width: 80%;
+}
+.form-container p{
+	font-family: 'work Sans';
+}
+input, select{
+	font-family: 'work Sans';
+    border: none;
+    box-shadow: 2px 1px 3px grey; 
+    height: 30px;  
+    margin-top: 0.3rem;
+	margin-bottom: 2rem;
+}
+
+.input-container{
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: #E8F1F6;
-	border-radius: 3px;
-	width: 25%;
-	height: 45%;
-	padding-left: 90px;
-	padding-right: 90px;
-	margin-bottom: 2rem;
-}
-.ajouter-image img{
-	max-height: 100%;
-}
-.ajouter-btn{
-
 	color: #306685;
 	background-color: #CBD6DD;
-	border-radius: 100px;
+	border-radius: 10px;
 	padding: 0.5rem ;
-	margin-left: 3em;
-	margin-right: 3em;
+	margin: 3rem;
 }
+.input-container input{
+	box-shadow: none;
+	padding: 0rem;
+	margin-bottom: 0;
+}
+
+.input-container img{
+	max-width: 40%;
+	margin-bottom: 1rem;
+}
+
 .fa-image{
 	margin-top: 1.5rem;
 	margin-bottom: 1rem;
@@ -482,32 +509,26 @@ h3{
 .ajouter-input{
 	width: 60%;
 }
-.ajouter-input-input{
-    border: none;
-    box-shadow: 2px 1px 3px grey; 
-    width: 100%; 
-    height: 30px;  
-    margin-top: 0.3rem;
-	margin-bottom: 2rem;
-}
 
 
-.ajouter-btn-valider{
+
+.submitWork{
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
+
 	background-color: #A7A7A7;
 	width: 40%;
-	text-align: center;
 	border-radius: 60px ;
     height: 25px;
     border: none;
-   height: 50px;
+   	height: 50px;
+   	cursor: pointer;
+	margin-top: 2rem;
 }
 
 .ajouter-btn-valider:hover{
 	background-color: #1D6154;
-	cursor: pointer;
 }
 
 
