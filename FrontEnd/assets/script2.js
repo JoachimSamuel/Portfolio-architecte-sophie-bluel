@@ -83,12 +83,7 @@ function filterGalleryByCategory(categoryName) {
   });
 }
 
-function getToken() {
-  // Code pour récupérer le token à partir de la variable ou du mécanisme de stockage approprié
-  const token = localStorage.getItem('token'); // Exemple d'utilisation du Local Storage
 
-  return token;
-}
 
 // Mettre à jour la page d'accueil si le token est présent
 if(localStorage.getItem("token")) {
@@ -103,15 +98,16 @@ if(localStorage.getItem("token")) {
 function changeLogoutButton() {
   const parent = document.querySelector('ul');
   const log = parent.querySelector("#login");
-  const logout = document.createElement('li');
-  logout.id = 'logout';
-  logout.innerHTML = "Logout";
-  parent.replaceChild(logout, log);
-  logout.addEventListener("click", () => {
-    // Supprimer le token du stockage local et rediriger vers la page de connexion
+  const logoutLink = document.createElement('li');
+  logoutLink.id = 'logout';
+  logoutLink.innerHTML = "Logout";
+  parent.replaceChild(logoutLink, log);
+  logoutLink.addEventListener("click", logout)
+}
+
+function logout (){
     localStorage.removeItem("token");
     window.location.href = "./login.html";
-  });
 }
 
 //Edition Mode
@@ -190,7 +186,7 @@ function btnModifier2(token) {
 
 
 
-//************** Nouvelle Modal *********************/
+//************** Modal *********************/
 
 function openModal() {
   const modalContent = document.createElement('div');
@@ -346,6 +342,10 @@ async function deleteWork(workId) {
       // Suppression réussie, effectuez les actions nécessaires (par exemple, supprimez l'élément du DOM)
       console.log('Le travail a été supprimé avec succès.');
       refreshGallery(true);
+    } else if (deleteResponse.status === 401) {
+      // Déconnexion en cas d'erreur 401
+      console.error('Erreur 401 : Accès non autorisé');
+      logout();
     } else {
       console.error('Une erreur s\'est produite lors de la suppression du travail.');
     }
@@ -382,6 +382,7 @@ function createWorkForm() {
 
   // Création des champs de saisie de texte
   const titleInput = createTextInput('Titre');
+
   const categoryInput = createCategoryInput();
 
   // Création de l'élément pour afficher l'image sélectionnée
@@ -393,6 +394,7 @@ function createWorkForm() {
 
   // Création du champ de téléchargement de fichier
   const fileInput = createFileInput(imagePreview);
+  
 
   // Ajout des écouteurs d'événements
   fileInput.input.addEventListener('change', () => {
@@ -446,6 +448,7 @@ function createButton(text, clickHandler) {
 function createTextInput(labelText) {
   const label = document.createElement('label');
   const input = document.createElement('input');
+  input.name = 'title'
   input.type = 'text';
   label.textContent = labelText;
   label.appendChild(input);
@@ -458,6 +461,7 @@ function createCategoryInput() {
   label.textContent = 'Catégorie';
   const select = document.createElement('select');
   select.name = 'category';
+
 
   // Création des options avec les identifiants correspondants
   const options = [
@@ -481,6 +485,7 @@ function createCategoryInput() {
 function createFileInput(imagePreview) {
   const label = document.createElement('label');
   const input = document.createElement('input');
+  input.name = "image";
   input.type = 'file';
   input.accept = 'image/jpeg, image/png';
   input.addEventListener('change', function(event) {
@@ -530,7 +535,8 @@ function handleSubmit(event) {
   event.preventDefault(); // Empêche l'envoi du formulaire
 
   const form = event.target.form;
-  const inputs = form.querySelectorAll('input[type="text"], select');
+  const inputs = form.querySelectorAll('input, select');
+  
   let allFieldsFilled = true;
   let formData = {}; // Objet pour stocker les données du formulaire
 
@@ -540,16 +546,20 @@ function handleSubmit(event) {
       input.classList.add('invalid');
     } else {
       input.classList.remove('invalid');
-      formData[input.name] = input.value; // Stocke la valeur du champ dans l'objet formData
+      if(input.type == "file" ){
+        formData[input.name] = input.files[0];
+      } else {
+        formData[input.name] = input.value; // Stocke la valeur du champ dans l'objet formData
+     }
     }
   });
-
+console.log(formData)
   if (allFieldsFilled) {
     event.target.classList.add('success');
     // Utilisez l'objet formData comme vous le souhaitez
     const { title, category, image } = formData;
     console.log('Titre:', title);
-    console.log('ID de catégorie:', category);
+    console.log('workId:', category);
     console.log('Image:', image);
 
     // Appel de la fonction pour envoyer la requête POST vers l'API
@@ -560,38 +570,43 @@ function handleSubmit(event) {
 }
 
 // Fonction pour envoyer la requête POST vers l'API avec les données du formulaire
-function sendFormData(formData, token) {
- // const token = getToken();
-  //if (token) {
-    // Création de l'objet FormData pour envoyer les données du formulaire
-    const formDataToSend = new FormData();
-    formDataToSend.append('title', formData.title);
-    formDataToSend.append('imageUrl', formData.image);
-    formDataToSend.append('categoryId', formData.category);
+function sendFormData(formData) {
+  const token = localStorage.getItem('token');
+  const myHeaders = new Headers();
+  myHeaders.append('Authorization', `Bearer ${token}`);
 
-    // Envoi de la requête POST vers l'API
-    fetch('http://localhost:5678/api/works', {
-      method: 'POST',
-      body: formDataToSend,
-      headers: {
-        Authorization: `Bearer ${token}` // Ajoute l'en-tête d'autorisation avec le token
+  // Création de l'objet FormData pour envoyer les données du formulaire
+  const formDataToSend = new FormData();
+  formDataToSend.append('title', formData.title);
+  formDataToSend.append('image', formData.image);
+  formDataToSend.append('category', formData.category);
+  formDataToSend.append('userId', 1)
+
+  // Envoi de la requête POST vers l'API
+  fetch('http://localhost:5678/api/works', {
+    method: 'POST',
+    body: formDataToSend,
+    headers: {
+      Authorization: `Bearer ${token}` // Ajoute l'en-tête d'autorisation avec le token
+    }
+  })
+    .then(response => {
+      if (response.status === 401) {
+        // Déconnexion en cas d'erreur 401
+        console.error('Erreur 401 : Accès non autorisé');
+        logout();
+      } else {
+        return response.json();
       }
     })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Réponse de l\'API:', data);
-        if (data.success) {
-          displayWorksManagerInModal();
-        } else {
-          // Gérer la réponse en cas d'échec de l'API
-        }
-      })
-      .catch(error => {
-        console.error('Erreur lors de la requête POST:', error);
-        // Gérer les erreurs ici
-      });
-  //}
-}
+    .then(data => {
+      console.log('Réponse de l\'API:', data);
+      if (data.success) {
+        closeModal();
+      } 
+    })
+
+}æ
 
 // Affiche le formulaire d'ajout dans la modale de la page
 function displayFormInModal() {
@@ -604,6 +619,7 @@ function closeModal() {
   const modalOverlay = document.querySelector('.modal-overlay');
   if (modalOverlay) {
     modalOverlay.remove();
+    refreshGallery();
   }
 }
 
