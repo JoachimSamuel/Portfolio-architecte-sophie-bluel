@@ -606,7 +606,7 @@ function sendFormData(formData) {
       } 
     })
 
-}æ
+}
 
 // Affiche le formulaire d'ajout dans la modale de la page
 function displayFormInModal() {
